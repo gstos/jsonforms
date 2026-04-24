@@ -20,6 +20,7 @@
     type UISchemaElement,
     type ValidationMode,
   } from '@jsonforms/core';
+  import { untrack } from 'svelte';
   import { setJsonFormsContext } from './context.svelte';
   import DispatchRenderer from './DispatchRenderer.svelte';
   import type { JsonFormsChangeEvent, MaybeReadonly } from './types';
@@ -60,8 +61,8 @@
   }>();
 
   // --- Initial schema / uischema resolution ---
-  const generatorData = isObject(data) ? data : {};
-  const schemaToUse: JsonSchema = schema ?? Generate.jsonSchema(generatorData);
+  const initGeneratorData = isObject(data) ? data : {};
+  const schemaToUse: JsonSchema = schema ?? Generate.jsonSchema(initGeneratorData);
   const uischemaToUse: UISchemaElement =
     uischema ?? Generate.uiSchema(schemaToUse, undefined, undefined, schemaToUse);
 
@@ -92,13 +93,66 @@
 
   function dispatch(action: CoreActions) {
     jsonforms.core = middleware(
-      jsonforms.core as JsonFormsCore,
+      untrack(() => jsonforms.core as JsonFormsCore),
       action,
       coreReducer
     );
   }
 
   setJsonFormsContext({ jsonforms, dispatch });
+
+  // --- Reactive prop updates ---
+
+  // renderers / cells / uischemas / readonly → assign directly into the state.
+  $effect(() => {
+    jsonforms.renderers = renderers as JsonFormsRendererRegistryEntry[];
+  });
+  $effect(() => {
+    jsonforms.cells = cells as JsonFormsCellRendererRegistryEntry[];
+  });
+  $effect(() => {
+    jsonforms.uischemas = uischemas as JsonFormsUISchemaRegistryEntry[];
+  });
+  $effect(() => {
+    jsonforms.readonly = readonly;
+  });
+
+  // config changes → reinitialize config slice.
+  $effect(() => {
+    jsonforms.config = configReducer(undefined, Actions.setConfig(config));
+  });
+
+  // i18n changes → reinitialize i18n slice.
+  // Use untrack to read current i18n without creating a circular dependency.
+  $effect(() => {
+    // Track only the incoming i18n prop; read current state via untrack.
+    const newI18n = i18n;
+    jsonforms.i18n = i18nReducer(
+      untrack(() => jsonforms.i18n),
+      Actions.updateI18n(newI18n?.locale, newI18n?.translate, newI18n?.translateError)
+    );
+  });
+
+  // schema + uischema + data + validationMode + ajv + additionalErrors → updateCore.
+  // Derive the resolved schema/uischema reactively, then apply updateCore.
+  // Use untrack when reading jsonforms.core to avoid circular dependency.
+  $effect(() => {
+    const generatorData = isObject(data) ? data : {};
+    const newSchema = schema ?? Generate.jsonSchema(generatorData);
+    const newUischema =
+      uischema ??
+      Generate.uiSchema(newSchema, undefined, undefined, newSchema);
+
+    jsonforms.core = middleware(
+      untrack(() => jsonforms.core as JsonFormsCore),
+      Actions.updateCore(data, newSchema, newUischema, {
+        validationMode,
+        ajv,
+        additionalErrors,
+      }),
+      coreReducer
+    );
+  });
 </script>
 
 <DispatchRenderer

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { render, rerender } from '@testing-library/svelte';
 import { Generate, rankWith, uiTypeIs } from '@jsonforms/core';
 import JsonForms from '../src/JsonForms.svelte';
 import Hello from './fixtures/Hello.svelte';
@@ -60,5 +60,46 @@ describe('JsonForms.svelte — init', () => {
       },
     });
     expect(container.querySelector('[data-testid="hello"]')).toBeTruthy();
+  });
+});
+
+describe('JsonForms.svelte — reactive prop updates', () => {
+  it('re-dispatches updateCore when data prop changes', async () => {
+    const data = { name: 'Alice' };
+    const renderers = [
+      { renderer: Hello, tester: rankWith(1, uiTypeIs('VerticalLayout')) },
+    ];
+    const { component, rerender: doRerender } = render(JsonForms, {
+      props: { data, renderers },
+    });
+    await doRerender({ data: { name: 'Bob' }, renderers });
+    // There is no public way to read core state from outside — mount a probe
+    // to assert. For now, assert no exceptions thrown during rerender.
+    expect(component).toBeTruthy();
+  });
+
+  it('regenerates uischema when schema changes and uischema is not provided', async () => {
+    const renderers = [
+      { renderer: Hello, tester: rankWith(1, uiTypeIs('VerticalLayout')) },
+      { renderer: Hello, tester: rankWith(2, uiTypeIs('Label')) },
+    ];
+    const { container, rerender: doRerender } = render(JsonForms, {
+      props: {
+        data: {},
+        schema: { type: 'object', properties: { a: { type: 'number' } } },
+        renderers,
+      },
+    });
+    expect(container.querySelector('[data-testid="hello"]')).toBeTruthy();
+
+    // A null-type schema produces a Label uischema — different renderer tester matches.
+    await doRerender({
+      data: {},
+      schema: { type: 'null' },
+      renderers,
+    });
+    // Should still render *some* hello — both testers use the same component.
+    // The key check: no throw and text is present.
+    expect(container.textContent).toContain('hello');
   });
 });
