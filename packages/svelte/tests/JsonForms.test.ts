@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, rerender } from '@testing-library/svelte';
 import { Generate, rankWith, uiTypeIs } from '@jsonforms/core';
 import JsonForms from '../src/JsonForms.svelte';
@@ -101,5 +101,46 @@ describe('JsonForms.svelte — reactive prop updates', () => {
     // Should still render *some* hello — both testers use the same component.
     // The key check: no throw and text is present.
     expect(container.textContent).toContain('hello');
+  });
+});
+
+describe('JsonForms.svelte — onchange', () => {
+  it('fires onchange once on mount with initial data and errors', () => {
+    const onchange = vi.fn();
+    render(JsonForms, {
+      props: {
+        data: { a: 1 },
+        schema: { type: 'object', properties: { a: { type: 'number' } } },
+        renderers: [],
+        onchange,
+      },
+    });
+    expect(onchange).toHaveBeenCalledTimes(1);
+    expect(onchange.mock.calls[0][0]).toEqual({
+      data: { a: 1 },
+      errors: expect.any(Array),
+    });
+  });
+
+  it('fires onchange again when data prop changes', async () => {
+    const onchange = vi.fn();
+    const { rerender: doRerender } = render(JsonForms, {
+      props: {
+        data: { a: 1 },
+        schema: { type: 'object', properties: { a: { type: 'number' } } },
+        renderers: [],
+        onchange,
+      },
+    });
+    onchange.mockClear();
+    await doRerender({
+      data: { a: 2 },
+      schema: { type: 'object', properties: { a: { type: 'number' } } },
+      renderers: [],
+      onchange,
+    });
+    expect(onchange).toHaveBeenCalled();
+    const last = onchange.mock.calls[onchange.mock.calls.length - 1][0];
+    expect(last.data).toEqual({ a: 2 });
   });
 });

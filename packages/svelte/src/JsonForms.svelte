@@ -153,6 +153,16 @@
       coreReducer
     );
   });
+
+  // onchange: fires on mount (first effect run) and on every subsequent
+  // change to core.data or core.errors.
+  $effect(() => {
+    const event: JsonFormsChangeEvent = {
+      data: jsonforms.core!.data,
+      errors: jsonforms.core!.errors ?? [],
+    };
+    onchange?.(event);
+  });
 </script>
 
 <DispatchRenderer
