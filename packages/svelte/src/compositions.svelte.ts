@@ -1,0 +1,302 @@
+import {
+  type Categorization,
+  type CoreActions,
+  type Dispatch,
+  type JsonFormsState,
+  type JsonSchema,
+  type LabelElement,
+  type Layout,
+  type OwnPropsOfMasterListItem,
+  type Scopable,
+  type StatePropsOfJsonFormsRenderer,
+  type UISchemaElement,
+  createId,
+  defaultMapStateToEnumCellProps,
+  isControl,
+  mapDispatchToArrayControlProps,
+  mapDispatchToControlProps,
+  mapDispatchToMultiEnumProps,
+  mapStateToAllOfProps,
+  mapStateToAnyOfProps,
+  mapStateToArrayControlProps,
+  mapStateToArrayLayoutProps,
+  mapStateToCellProps,
+  mapStateToControlProps,
+  mapStateToControlWithDetailProps,
+  mapStateToDispatchCellProps,
+  mapStateToEnumControlProps,
+  mapStateToJsonFormsRendererProps,
+  mapStateToLabelProps,
+  mapStateToLayoutProps,
+  mapStateToMasterListItemProps,
+  mapStateToMultiEnumControlProps,
+  mapStateToOneOfEnumCellProps,
+  mapStateToOneOfEnumControlProps,
+  mapStateToOneOfProps,
+  removeId,
+} from '@jsonforms/core';
+import { requireJsonFormsContext } from './context.svelte';
+import type {
+  ControlProps,
+  LayoutProps,
+  MasterListItemProps,
+  RendererProps,
+  Required,
+} from './types';
+
+/**
+ * Generic composition primitive. Subscribes to the jsonforms context and
+ * exposes a reactive `control` object derived from a core state mapper,
+ * plus optional dispatch methods from a core dispatch mapper.
+ *
+ * Id lifecycle: allocates a fresh core id whenever `props.schema` changes
+ * (including on initial setup) and releases it on unmount or before
+ * re-allocating.
+ */
+export function useControl<
+  R,
+  P extends { schema: JsonSchema; uischema: UISchemaElement & Scopable }
+>(
+  props: P,
+  stateMap: (state: JsonFormsState, props: P) => R
+): { control: Required<P & R> };
+export function useControl<
+  R,
+  D,
+  P extends { schema: JsonSchema; uischema: UISchemaElement & Scopable }
+>(
+  props: P,
+  stateMap: (state: JsonFormsState, props: P) => R,
+  dispatchMap: (dispatch: Dispatch<CoreActions>) => D
+): { control: Required<P & R> } & D;
+export function useControl<
+  R,
+  D,
+  P extends { schema: JsonSchema; uischema: UISchemaElement & Scopable }
+>(
+  props: P,
+  stateMap: (state: JsonFormsState, props: P) => R,
+  dispatchMap?: (dispatch: Dispatch<CoreActions>) => D
+) {
+  const { jsonforms, dispatch } = requireJsonFormsContext();
+
+  let id = $state<string | undefined>(undefined);
+
+  // Derived mapped control object; readers get reactive updates because
+  // accessing `props.schema` / `props.uischema` / `jsonforms.core.*` during
+  // the deriver's eval registers a dependency.
+  const derived = $derived({
+    ...props,
+    ...stateMap({ jsonforms }, props),
+    id,
+  }) as unknown as Required<P & R>;
+
+  // Expose derived via a Proxy so cross-module consumers preserve reactivity.
+  // Each property access goes through the `get` trap, which re-reads `derived`
+  // (a $derived), registering the dependency in the caller's reactive context.
+  const control = new Proxy({} as object, {
+    get(_target, key) {
+      return (derived as Record<string | symbol, unknown>)[key as string];
+    },
+    has(_target, key) {
+      return key in (derived as object);
+    },
+    ownKeys() {
+      return Reflect.ownKeys(derived as object);
+    },
+    getOwnPropertyDescriptor(_target, key) {
+      return Object.getOwnPropertyDescriptor(derived as object, key);
+    },
+  }) as Required<P & R>;
+
+  // Id allocation — runs on mount and whenever props.schema changes.
+  $effect(() => {
+    const u = props.uischema;
+    // Track schema so effect re-runs when it changes.
+    void props.schema;
+    if (u && isControl(u as UISchemaElement) && (u as Scopable).scope) {
+      id = createId((u as Scopable).scope!);
+    }
+    return () => {
+      if (id) {
+        removeId(id);
+        id = undefined;
+      }
+    };
+  });
+
+  const dispatchMethods = dispatchMap?.(dispatch);
+
+  return {
+    control,
+    ...(dispatchMethods as D),
+  };
+}
+
+/**
+ * Generic control bindings. Use when no specialized binding applies.
+ * Returns `{ control, handleChange }`.
+ */
+export const getJsonFormsControl = (props: ControlProps) => {
+  return useControl(props, mapStateToControlProps, mapDispatchToControlProps);
+};
+
+/** Bindings for controls exposing a `detail` (e.g. array/object renderers). */
+export const getJsonFormsControlWithDetail = (props: ControlProps) =>
+  useControl(props, mapStateToControlWithDetailProps, mapDispatchToControlProps);
+
+/** Bindings for `enum` schema controls. */
+export const getJsonFormsEnumControl = (props: ControlProps) =>
+  useControl(props, mapStateToEnumControlProps, mapDispatchToControlProps);
+
+/** Bindings for `oneOf` enums (label-augmented enums). */
+export const getJsonFormsOneOfEnumControl = (props: ControlProps) =>
+  useControl(props, mapStateToOneOfEnumControlProps, mapDispatchToControlProps);
+
+/** Bindings for `allOf` schema controls. */
+export const getJsonFormsAllOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToAllOfProps, mapDispatchToControlProps);
+
+/** Bindings for `anyOf` schema controls. */
+export const getJsonFormsAnyOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToAnyOfProps, mapDispatchToControlProps);
+
+/** Bindings for `oneOf` schema controls. */
+export const getJsonFormsOneOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToOneOfProps, mapDispatchToControlProps);
+
+/**
+ * Explicit return type to avoid TS2732 caused by AJV's ErrorObject type.
+ * Mirrors the Vue binding's `UseJsonFormsArrayControlReturnType` workaround.
+ */
+type ArrayControlReturn = {
+  control: Required<ReturnType<typeof mapStateToArrayControlProps>>;
+} & ReturnType<typeof mapDispatchToArrayControlProps>;
+
+/** Bindings for array-schema controls (add/remove/move). */
+export const getJsonFormsArrayControl: (props: ControlProps) => ArrayControlReturn =
+  (props: ControlProps) =>
+    useControl(
+      props,
+      mapStateToArrayControlProps,
+      mapDispatchToArrayControlProps
+    ) as unknown as ArrayControlReturn;
+
+/** Bindings for multi-select enum (array-of-enum) controls. */
+export const getJsonFormsMultiEnumControl = (props: ControlProps) =>
+  useControl(
+    props,
+    mapStateToMultiEnumControlProps,
+    mapDispatchToMultiEnumProps
+  );
+
+/** Bindings for layout elements (VerticalLayout, HorizontalLayout, Group, etc.). */
+export const getJsonFormsLayout = (props: LayoutProps) => {
+  const { control, ...other } = useControl(props, mapStateToLayoutProps);
+  return { layout: control, ...other };
+};
+
+/** Bindings for array elements that render as a layout (not a control). */
+export const getJsonFormsArrayLayout = (props: ControlProps) => {
+  const { control, ...other } = useControl(props, mapStateToArrayLayoutProps);
+  return { layout: control, ...other };
+};
+
+/** Bindings for Label elements. */
+export const getJsonFormsLabel = (props: RendererProps<LabelElement>) => {
+  const { control, ...other } = useControl(props, mapStateToLabelProps);
+  return { label: control, ...other };
+};
+
+/** Bindings for master-list items in a master-detail array control. */
+export const getJsonFormsMasterListItem = (props: MasterListItemProps) => {
+  const { control, ...other } = useControl<
+    Omit<OwnPropsOfMasterListItem, 'handleSelect' | 'removeItem'>,
+    OwnPropsOfMasterListItem
+  >(props as unknown as OwnPropsOfMasterListItem, mapStateToMasterListItemProps);
+  return { item: control, ...other };
+};
+
+/** Bindings for cells (minimal inputs without error validation). */
+export const getJsonFormsCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsEnumCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    defaultMapStateToEnumCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsOneOfEnumCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToOneOfEnumCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsDispatchCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToDispatchCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+/**
+ * Specialized bindings used by DispatchRenderer / DispatchCell to pick the
+ * best-matching renderer from the registry. Returns `{ renderer, rootSchema }`
+ * where both are reactive.
+ */
+export const getJsonFormsRenderer = (props: RendererProps) => {
+  const { jsonforms } = requireJsonFormsContext();
+
+  const raw = $derived(
+    mapStateToJsonFormsRendererProps({ jsonforms }, props) as Required<StatePropsOfJsonFormsRenderer>
+  );
+  const rootSchema = $derived(raw.rootSchema);
+  const renderer = $derived.by(() => {
+    const { rootSchema: _root, ...rest } = raw;
+    return rest;
+  });
+
+  return {
+    get renderer() {
+      return renderer;
+    },
+    get rootSchema() {
+      return rootSchema;
+    },
+  };
+};
+
+/**
+ * Bindings for Categorization elements. Returns the usual `layout` plus a
+ * `categories` array where each entry is a sub-layout binding for one category.
+ */
+export const getJsonFormsCategorization = (props: LayoutProps) => {
+  const { layout, ...other } = getJsonFormsLayout(props);
+
+  const categories = (layout.uischema as Categorization).elements.map(
+    (category) => {
+      const categoryProps: LayoutProps = {
+        ...props,
+        uischema: category as Layout,
+      };
+      return getJsonFormsLayout(categoryProps).layout;
+    }
+  );
+
+  return { layout, categories, ...other };
+};

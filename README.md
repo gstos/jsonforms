@@ -2,6 +2,14 @@
 
 _Complex forms in the blink of an eye_
 
+> **Fork note (`gstos/jsonforms`).** This fork tracks upstream [`eclipsesource/jsonforms`](https://github.com/eclipsesource/jsonforms)'s alpha branch and adds **Svelte 5 support**:
+>
+> - ✅ `@jsonforms/svelte` — framework binding, ported from `@jsonforms/vue` (see `packages/svelte/`)
+> - 🚧 `@jsonforms/svelte-shadcn` — shadcn-svelte renderer set (planned, see `docs/superpowers/specs/2026-04-24-svelte-shadcn-binding-design.md`)
+>
+> Everything else mirrors upstream. Design specs and implementation plans live in `docs/superpowers/`.
+
+
 ## Documentation
 
 Please see the official JSON Forms website, [jsonforms.io](https://jsonforms.io), for documentation, examples and API references.
