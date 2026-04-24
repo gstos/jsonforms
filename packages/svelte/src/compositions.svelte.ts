@@ -154,3 +154,35 @@ export const getJsonFormsAnyOfControl = (props: ControlProps) =>
 /** Bindings for `oneOf` schema controls. */
 export const getJsonFormsOneOfControl = (props: ControlProps) =>
   useControl(props, mapStateToOneOfProps, mapDispatchToControlProps);
+
+import {
+  mapDispatchToArrayControlProps,
+  mapDispatchToMultiEnumProps,
+  mapStateToArrayControlProps,
+  mapStateToMultiEnumControlProps,
+} from '@jsonforms/core';
+
+/**
+ * Explicit return type to avoid TS2732 caused by AJV's ErrorObject type.
+ * Mirrors the Vue binding's `UseJsonFormsArrayControlReturnType` workaround.
+ */
+type ArrayControlReturn = {
+  control: Required<ReturnType<typeof mapStateToArrayControlProps>>;
+} & ReturnType<typeof mapDispatchToArrayControlProps>;
+
+/** Bindings for array-schema controls (add/remove/move). */
+export const getJsonFormsArrayControl: (props: ControlProps) => ArrayControlReturn =
+  (props: ControlProps) =>
+    useControl(
+      props,
+      mapStateToArrayControlProps,
+      mapDispatchToArrayControlProps
+    ) as unknown as ArrayControlReturn;
+
+/** Bindings for multi-select enum (array-of-enum) controls. */
+export const getJsonFormsMultiEnumControl = (props: ControlProps) =>
+  useControl(
+    props,
+    mapStateToMultiEnumControlProps,
+    mapDispatchToMultiEnumProps
+  );

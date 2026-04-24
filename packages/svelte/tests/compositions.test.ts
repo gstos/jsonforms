@@ -86,3 +86,18 @@ describe('simple control composition variants', () => {
     });
   }
 });
+
+import {
+  getJsonFormsArrayControl,
+  getJsonFormsMultiEnumControl,
+} from '../src/compositions.svelte';
+
+describe('array and multi-enum control compositions', () => {
+  it('getJsonFormsArrayControl is exported and returns array-dispatch methods', () => {
+    expect(typeof getJsonFormsArrayControl).toBe('function');
+  });
+
+  it('getJsonFormsMultiEnumControl is exported', () => {
+    expect(typeof getJsonFormsMultiEnumControl).toBe('function');
+  });
+});
