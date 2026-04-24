@@ -7,7 +7,7 @@ This is `gstos/jsonforms` — a fork of [`eclipsesource/jsonforms`](https://gith
 | Subsystem | Status | Location |
 |---|---|---|
 | `@jsonforms/svelte` — Svelte 5 framework binding | ✅ Merged (PR #1) | `packages/svelte/` |
-| `@jsonforms/svelte-shadcn` — shadcn-svelte renderer set | 🚧 Planned, not started | `packages/svelte-shadcn/` (future) |
+| `@jsonforms/svelte-shadcn` — shadcn-svelte renderer set | ✅ Merged (PR #3) | `packages/svelte-shadcn/` |
 
 The Svelte binding was ported 1:1 from `@jsonforms/vue`. If in doubt about binding behavior, consult `packages/vue/src/` — the Svelte counterpart mirrors it.
 
