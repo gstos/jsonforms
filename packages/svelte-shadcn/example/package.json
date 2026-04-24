@@ -1,0 +1,25 @@
+{
+  "name": "@jsonforms/svelte-shadcn-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@jsonforms/core": "workspace:*",
+    "@jsonforms/svelte": "workspace:*",
+    "@jsonforms/svelte-shadcn": "workspace:*",
+    "bits-ui": "^1.3.0",
+    "svelte": "^5.16.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "~5.5.0",
+    "vite": "^5.4.11"
+  }
+}
