@@ -1,4 +1,18 @@
 @import 'tailwindcss';
+
+/*
+ * Tailwind v4 auto-scans the app's own source files. The shadcn renderers
+ * live in a sibling workspace package, so we must tell Tailwind to scan them
+ * too — otherwise none of their utility classes land in the generated CSS
+ * and the form renders unstyled.
+ *
+ * Consumers of @jsonforms/svelte-shadcn must do the equivalent from their
+ * own app CSS (adjust paths to wherever the package resolves on their
+ * machine — typically somewhere under node_modules).
+ */
+@source "../../src/**/*.{svelte,ts,js}";
+@source "../../dist/**/*.{svelte,js}";
+
 @import '@jsonforms/svelte-shadcn/styles/tokens.css';
 
 @theme inline {
