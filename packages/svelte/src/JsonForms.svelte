@@ -9,6 +9,7 @@
     i18nReducer,
     defaultMiddleware,
     type CoreActions,
+    type Dispatch,
     type JsonFormsCellRendererRegistryEntry,
     type JsonFormsCore,
     type JsonFormsI18nState,
@@ -91,13 +92,14 @@
     readonly,
   });
 
-  function dispatch(action: CoreActions) {
+  const dispatch: Dispatch<CoreActions> = (action) => {
     jsonforms.core = middleware(
       untrack(() => jsonforms.core as JsonFormsCore),
       action,
       coreReducer
     );
-  }
+    return action;
+  };
 
   setJsonFormsContext({ jsonforms, dispatch });
 

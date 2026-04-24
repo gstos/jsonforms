@@ -6,7 +6,7 @@ describe('jsonforms context', () => {
   it('getJsonFormsContext returns what setJsonFormsContext set in a parent', () => {
     const { getByTestId } = render(ContextProbe, {
       props: {
-        provided: { jsonforms: { core: { data: 42 } } as any, dispatch: () => {} },
+        provided: { jsonforms: { core: { data: 42 } } as any, dispatch: (a: any) => a },
       },
     });
     expect(getByTestId('probe').textContent).toBe('42');

@@ -13,7 +13,7 @@
   }
 
   const ctx = getJsonFormsContext();
-  const display = ctx ? String(ctx.jsonforms.core.data) : 'no-context';
+  const display = ctx ? String(ctx.jsonforms.core?.data) : 'no-context';
 </script>
 
 <span data-testid="probe">{display}</span>

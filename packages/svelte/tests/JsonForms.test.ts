@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, rerender } from '@testing-library/svelte';
-import { Generate, rankWith, uiTypeIs } from '@jsonforms/core';
+import { render } from '@testing-library/svelte';
+import { rankWith, uiTypeIs } from '@jsonforms/core';
 import JsonForms from '../src/JsonForms.svelte';
 import Hello from './fixtures/Hello.svelte';
 

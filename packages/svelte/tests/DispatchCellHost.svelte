@@ -8,7 +8,7 @@
     cellProps: any;
   }>();
 
-  setJsonFormsContext({ jsonforms, dispatch: () => {} });
+  setJsonFormsContext({ jsonforms, dispatch: (a) => a });
 </script>
 
 <DispatchCell {...cellProps} />

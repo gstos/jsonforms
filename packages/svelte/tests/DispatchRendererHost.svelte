@@ -8,7 +8,7 @@
     rendererProps: any;
   }>();
 
-  setJsonFormsContext({ jsonforms, dispatch: () => {} });
+  setJsonFormsContext({ jsonforms, dispatch: (a) => a });
 </script>
 
 <DispatchRenderer {...rendererProps} />

@@ -2,7 +2,7 @@
   import { getJsonFormsControl } from '../src/compositions.svelte';
   import type { ControlProps } from '../src/types';
 
-  let props = $props<ControlProps>();
+  let props: ControlProps = $props();
   const { control, handleChange } = getJsonFormsControl(props);
 
   // Expose for test assertions

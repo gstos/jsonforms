@@ -1,5 +1,4 @@
 import {
-  type ControlElement,
   type CoreActions,
   type Dispatch,
   type JsonFormsState,
@@ -27,7 +26,6 @@ import type { ControlProps, Required } from './types';
  */
 export function useControl<
   R,
-  D,
   P extends { schema: JsonSchema; uischema: UISchemaElement & Scopable }
 >(
   props: P,
@@ -62,7 +60,7 @@ export function useControl<
     ...props,
     ...stateMap({ jsonforms }, props),
     id,
-  }) as Required<P & R>;
+  }) as unknown as Required<P & R> & { id?: string };
 
   // Expose derived via a getter so cross-module consumers preserve reactivity.
   // Using getter-based object instead of Proxy to ensure reliable reactivity
@@ -70,7 +68,7 @@ export function useControl<
   // tracks property reads through the getter on each access.
   const control = {
     get id() { return derived.id; },
-  } as Required<P & R>;
+  } as unknown as Required<P & R>;
 
   // Build a proper getter-proxy that forwards all property accesses to `derived`.
   // This is needed because `derived` is the live reactive object — each property
@@ -227,7 +225,6 @@ export const getJsonFormsLabel = (props: RendererProps<LabelElement>) => {
 export const getJsonFormsMasterListItem = (props: MasterListItemProps) => {
   const { control, ...other } = useControl<
     Omit<OwnPropsOfMasterListItem, 'handleSelect' | 'removeItem'>,
-    unknown,
     OwnPropsOfMasterListItem
   >(props as unknown as OwnPropsOfMasterListItem, mapStateToMasterListItemProps);
   return { item: control, ...other };
