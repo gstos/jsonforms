@@ -12,4 +12,4 @@
     className
   )}
   {...rest}
-/>
+></textarea>

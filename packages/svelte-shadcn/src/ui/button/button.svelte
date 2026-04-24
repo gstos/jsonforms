@@ -1,9 +1,10 @@
 <script lang="ts">
   import { cn } from '../../util/cn';
   import type { HTMLButtonAttributes } from 'svelte/elements';
+  import type { Snippet } from 'svelte';
 
-  type Props = HTMLButtonAttributes & { class?: string };
-  let { class: className, ...rest }: Props = $props();
+  type Props = HTMLButtonAttributes & { class?: string; children?: Snippet };
+  let { class: className, children, ...rest }: Props = $props();
 </script>
 
 <button
@@ -13,5 +14,5 @@
   )}
   {...rest}
 >
-  <slot />
+  {@render children?.()}
 </button>

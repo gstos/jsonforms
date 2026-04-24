@@ -2,7 +2,10 @@
   import { Slider as SliderPrimitive } from 'bits-ui';
   import { cn } from '../../util/cn';
 
-  type Props = SliderPrimitive.RootProps & { class?: string };
+  // bits-ui 1.x Slider.Root is a discriminated union on `type: 'single' | 'multiple'`.
+  // We pin to the 'multiple' variant so `value` is always `number[]`.
+  // Callers must not pass `type="single"` — use value binding as an array.
+  type Props = Extract<SliderPrimitive.RootProps, { type: 'multiple' }> & { class?: string };
   let { class: className, value = $bindable([0]), ...rest }: Props = $props();
 </script>
 
