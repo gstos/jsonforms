@@ -15,26 +15,26 @@ describe('TextCell', () => {
     it('ranks string control with rank 1', () => {
       const schema = { type: 'string' };
       const uischema = { type: 'Control', scope: '#/properties/name' };
-      const rank = textCellEntry.tester(uischema, schema, undefined);
+      const rank = textCellEntry.tester(uischema, schema, { rootSchema: schema, config: {} });
       expect(rank).toBe(1);
     });
 
     it('ranks non-string control with -1', () => {
       const schema = { type: 'number' };
       const uischema = { type: 'Control', scope: '#/properties/age' };
-      const rank = textCellEntry.tester(uischema, schema, undefined);
+      const rank = textCellEntry.tester(uischema, schema, { rootSchema: schema, config: {} });
       expect(rank).toBe(-1);
     });
 
     it('uses isStringControl from @jsonforms/core', () => {
       const stringSchema = { type: 'string' };
-      const numberSchema = { type: 'number' };
       const uischema = { type: 'Control', scope: '#/properties/test' };
+      const ctx = { rootSchema: stringSchema, config: {} };
 
       // Both should return same rank regardless of schema validation
       // because tester is based on isStringControl
-      const stringRank = textCellEntry.tester(uischema, stringSchema, undefined);
-      expect(isStringControl(uischema, stringSchema)).toBe(true);
+      const stringRank = textCellEntry.tester(uischema, stringSchema, ctx);
+      expect(isStringControl(uischema, stringSchema, ctx)).toBe(true);
       expect(stringRank).toBe(1);
     });
   });

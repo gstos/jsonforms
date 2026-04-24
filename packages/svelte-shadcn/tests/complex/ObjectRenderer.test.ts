@@ -75,7 +75,7 @@ describe('ObjectRenderer', () => {
       },
     };
     const testUischema = { type: 'Control', scope: '#/properties/address' };
-    const context = { rootSchema: testSchema };
+    const context = { rootSchema: testSchema, config: {} };
     const score = tester(testUischema, testSchema, context);
     // isObjectControl should return true for an object-typed property, rank = 2
     expect(score).toBe(2);

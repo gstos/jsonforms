@@ -3,7 +3,6 @@ import { render } from '@testing-library/svelte';
 import { coreReducer, Actions, type JsonFormsSubStates } from '@jsonforms/core';
 import CompositionProbeHost from './CompositionProbeHost.svelte';
 import {
-  useShadcnControl,
   useShadcnLayout,
   useShadcnArrayControl,
 } from '../../src/util/composition.svelte';

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, fireEvent } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { JsonForms } from '@jsonforms/svelte';
 import { enumCellEntry } from '../../src/cells/EnumCell';
 import { arrayListRendererEntry } from '../../src/array/ArrayListRenderer';

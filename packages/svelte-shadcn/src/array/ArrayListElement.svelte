@@ -1,7 +1,6 @@
 <script lang="ts">
   import { DispatchRenderer } from '@jsonforms/svelte';
   import Button from '../ui/button/button.svelte';
-  import Separator from '../ui/separator/separator.svelte';
 
   let {
     index,
@@ -30,9 +29,9 @@
 
 <div class="flex flex-col gap-2 p-3 rounded-md border border-border">
   <div class="flex gap-1 justify-end">
-    <Button type="button" onclick={() => moveUp?.(path, index)()} disabled={!enabled}>↑</Button>
-    <Button type="button" onclick={() => moveDown?.(path, index)()} disabled={!enabled}>↓</Button>
-    <Button type="button" onclick={() => removeItems?.(path, [index])()} disabled={!enabled}>✕</Button>
+    <Button type="button" onclick={() => moveUp?.(path, index)()} disabled={!enabled} title={translations?.up}>↑</Button>
+    <Button type="button" onclick={() => moveDown?.(path, index)()} disabled={!enabled} title={translations?.down}>↓</Button>
+    <Button type="button" onclick={() => removeItems?.(path, [index])()} disabled={!enabled} title={translations?.removeTooltip}>✕</Button>
   </div>
   <DispatchRenderer {schema} {uischema} path={itemPath} {enabled} />
 </div>

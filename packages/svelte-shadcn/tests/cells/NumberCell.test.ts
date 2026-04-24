@@ -13,34 +13,36 @@ describe('NumberCell', () => {
           age: { type: 'number' },
         },
       };
-      const result = tester(uischema, schema, undefined);
+      const result = tester(uischema, schema, { rootSchema: schema, config: {} });
       expect(result).toBe(1);
     });
 
     it('should have rank 1 tester in entry', () => {
+      const entrySchema = {
+        type: 'object',
+        properties: {
+          value: { type: 'number' },
+        },
+      };
       const result = numberCellEntry.tester(
         { type: 'Control', scope: '#/properties/value' },
-        {
-          type: 'object',
-          properties: {
-            value: { type: 'number' },
-          },
-        },
-        undefined
+        entrySchema,
+        { rootSchema: entrySchema, config: {} }
       );
       expect(result).toBe(1);
     });
 
     it('should not match non-number controls', () => {
+      const nonNumSchema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+        },
+      };
       const result = numberCellEntry.tester(
         { type: 'Control', scope: '#/properties/name' },
-        {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-          },
-        },
-        undefined
+        nonNumSchema,
+        { rootSchema: nonNumSchema, config: {} }
       );
       expect(result).toBe(-1);
     });

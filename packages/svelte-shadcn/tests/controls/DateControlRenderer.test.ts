@@ -20,7 +20,7 @@ describe('DateControlRenderer', () => {
         renderers: [dateControlRendererEntry],
       },
     });
-    const input = container.querySelector('input[type="date"]');
+    const input = container.querySelector('input[type="date"]') as HTMLInputElement | null;
     expect(input).toBeTruthy();
     expect(input!.value).toBe('2020-01-15');
   });

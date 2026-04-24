@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getJsonFormsArrayControl, DispatchRenderer, type ControlProps } from '@jsonforms/svelte';
+  import { getJsonFormsArrayControl, type ControlProps } from '@jsonforms/svelte';
   import { createDefaultValue } from '@jsonforms/core';
   import { useShadcnArrayControl } from '../util/composition.svelte';
   import ControlWrapper from '../ControlWrapper.svelte';

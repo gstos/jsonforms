@@ -13,34 +13,36 @@ describe('IntegerCell', () => {
           age: { type: 'integer' },
         },
       };
-      const result = tester(uischema, schema, undefined);
+      const result = tester(uischema, schema, { rootSchema: schema, config: {} });
       expect(result).toBe(1);
     });
 
     it('should have rank 1 tester in entry', () => {
+      const entrySchema = {
+        type: 'object',
+        properties: {
+          value: { type: 'integer' },
+        },
+      };
       const result = integerCellEntry.tester(
         { type: 'Control', scope: '#/properties/value' },
-        {
-          type: 'object',
-          properties: {
-            value: { type: 'integer' },
-          },
-        },
-        undefined
+        entrySchema,
+        { rootSchema: entrySchema, config: {} }
       );
       expect(result).toBe(1);
     });
 
     it('should not match non-integer controls', () => {
+      const nonIntSchema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+        },
+      };
       const result = integerCellEntry.tester(
         { type: 'Control', scope: '#/properties/name' },
-        {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-          },
-        },
-        undefined
+        nonIntSchema,
+        { rootSchema: nonIntSchema, config: {} }
       );
       expect(result).toBe(-1);
     });
