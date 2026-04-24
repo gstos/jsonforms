@@ -7,27 +7,29 @@
 
   let props: RendererProps = $props();
 
-  const { renderer, rootSchema } = getJsonFormsRenderer(props);
+  // Keep the whole binding object — destructuring its getters once would
+  // snapshot $derived values and break post-mount reactivity.
+  const bindings = getJsonFormsRenderer(props);
 
   const determined = $derived.by<Component>(() => {
     const testerContext = {
-      rootSchema: rootSchema,
+      rootSchema: bindings.rootSchema,
       config: props.config,
     };
-    const best = maxBy(renderer.renderers, (r) =>
-      r.tester(renderer.uischema, renderer.schema, testerContext)
+    const best = maxBy(bindings.renderer.renderers, (r) =>
+      r.tester(bindings.renderer.uischema, bindings.renderer.schema, testerContext)
     );
     if (
       best === undefined ||
-      best.tester(renderer.uischema, renderer.schema, testerContext) === -1
+      best.tester(bindings.renderer.uischema, bindings.renderer.schema, testerContext) === -1
     ) {
       return UnknownRenderer as unknown as Component;
     }
     return best.renderer as unknown as Component;
   });
 
-  // `renderer` already has schema/uischema/path/etc. merged in — spread it.
-  const forwardProps = $derived({ ...renderer });
+  // `bindings.renderer` already has schema/uischema/path/etc. merged in — spread it.
+  const forwardProps = $derived({ ...bindings.renderer });
 </script>
 
 {#if determined === UnknownRenderer}
