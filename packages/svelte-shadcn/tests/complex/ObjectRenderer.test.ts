@@ -61,9 +61,8 @@ describe('ObjectRenderer', () => {
     expect(input!.value).toBe('');
   });
 
-  it('uses the tester with rank 2 for object controls', () => {
-    const { rankWith, isObjectControl } = require('@jsonforms/core');
-    // The tester should be constructed with rank 2 and isObjectControl
+  it('uses the tester with rank 2 for object controls', async () => {
+    const { rankWith, isObjectControl } = await import('@jsonforms/core');
     const tester = rankWith(2, isObjectControl);
     // Use a schema where the control scope points to an object-typed property
     const testSchema = {
