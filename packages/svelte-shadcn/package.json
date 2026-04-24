@@ -1,0 +1,90 @@
+{
+  "name": "@jsonforms/svelte-shadcn",
+  "version": "3.8.0-alpha.0",
+  "description": "Svelte 5 shadcn-style renderer set for JSON Forms",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eclipsesource/jsonforms.git",
+    "directory": "packages/svelte-shadcn"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "svelte",
+    "svelte5",
+    "shadcn",
+    "bits-ui",
+    "tailwindcss",
+    "form",
+    "forms",
+    "json",
+    "jsonforms",
+    "jsonschema"
+  ],
+  "type": "module",
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles/tokens.css": "./dist/styles/tokens.css"
+  },
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
+  "scripts": {
+    "build": "svelte-package --input src --output dist && publint",
+    "clean": "rimraf dist",
+    "lint": "eslint . && svelte-check --tsconfig ./tsconfig.json",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "cd example && vite",
+    "example:build": "cd example && vite build"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.5"
+  },
+  "devDependencies": {
+    "@jsonforms/core": "workspace:*",
+    "@jsonforms/svelte": "workspace:*",
+    "@sveltejs/package": "^2.3.7",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/svelte": "^5.2.4",
+    "@types/node": "^22.13.8",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "bits-ui": "^1.3.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-svelte": "^2.46.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^2.8.4",
+    "prettier-plugin-svelte": "^3.3.2",
+    "publint": "^0.2.12",
+    "rimraf": "^6.1.0",
+    "svelte": "^5.16.0",
+    "svelte-check": "^4.1.1",
+    "tailwindcss": "^4.0.0",
+    "tslib": "^2.5.0",
+    "typescript": "~5.5.0",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "@jsonforms/core": "3.8.0-alpha.0",
+    "@jsonforms/svelte": "3.8.0-alpha.0",
+    "bits-ui": "^1.0.0",
+    "svelte": "^5.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
