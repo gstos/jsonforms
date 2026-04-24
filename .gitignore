@@ -18,3 +18,5 @@ packages/examples-react/build
 **/.angular/cache
 .pnpm-store
 .playwright-mcp
+
+.worktrees
