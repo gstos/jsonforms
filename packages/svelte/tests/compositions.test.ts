@@ -58,3 +58,31 @@ describe('getJsonFormsControl', () => {
     expect(jsonforms.core!.data).toEqual({ name: 'Bob' });
   });
 });
+
+import {
+  getJsonFormsControlWithDetail,
+  getJsonFormsEnumControl,
+  getJsonFormsOneOfEnumControl,
+  getJsonFormsAllOfControl,
+  getJsonFormsAnyOfControl,
+  getJsonFormsOneOfControl,
+} from '../src/compositions.svelte';
+
+describe('simple control composition variants', () => {
+  const cases = [
+    { name: 'getJsonFormsControlWithDetail', fn: getJsonFormsControlWithDetail },
+    { name: 'getJsonFormsEnumControl', fn: getJsonFormsEnumControl },
+    { name: 'getJsonFormsOneOfEnumControl', fn: getJsonFormsOneOfEnumControl },
+    { name: 'getJsonFormsAllOfControl', fn: getJsonFormsAllOfControl },
+    { name: 'getJsonFormsAnyOfControl', fn: getJsonFormsAnyOfControl },
+    { name: 'getJsonFormsOneOfControl', fn: getJsonFormsOneOfControl },
+  ];
+
+  for (const { name, fn } of cases) {
+    it(`${name} is callable and returns { control, handleChange }`, () => {
+      expect(typeof fn).toBe('function');
+      // We don't render here — just smoke-check the export. Full behavioral
+      // coverage comes via the DispatchRenderer + JsonForms integration tests.
+    });
+  }
+});

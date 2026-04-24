@@ -121,3 +121,36 @@ export function useControl<
 export const getJsonFormsControl = (props: ControlProps) => {
   return useControl(props, mapStateToControlProps, mapDispatchToControlProps);
 };
+
+import {
+  mapStateToAllOfProps,
+  mapStateToAnyOfProps,
+  mapStateToControlWithDetailProps,
+  mapStateToEnumControlProps,
+  mapStateToOneOfEnumControlProps,
+  mapStateToOneOfProps,
+} from '@jsonforms/core';
+
+/** Bindings for controls exposing a `detail` (e.g. array/object renderers). */
+export const getJsonFormsControlWithDetail = (props: ControlProps) =>
+  useControl(props, mapStateToControlWithDetailProps, mapDispatchToControlProps);
+
+/** Bindings for `enum` schema controls. */
+export const getJsonFormsEnumControl = (props: ControlProps) =>
+  useControl(props, mapStateToEnumControlProps, mapDispatchToControlProps);
+
+/** Bindings for `oneOf` enums (label-augmented enums). */
+export const getJsonFormsOneOfEnumControl = (props: ControlProps) =>
+  useControl(props, mapStateToOneOfEnumControlProps, mapDispatchToControlProps);
+
+/** Bindings for `allOf` schema controls. */
+export const getJsonFormsAllOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToAllOfProps, mapDispatchToControlProps);
+
+/** Bindings for `anyOf` schema controls. */
+export const getJsonFormsAnyOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToAnyOfProps, mapDispatchToControlProps);
+
+/** Bindings for `oneOf` schema controls. */
+export const getJsonFormsOneOfControl = (props: ControlProps) =>
+  useControl(props, mapStateToOneOfProps, mapDispatchToControlProps);
