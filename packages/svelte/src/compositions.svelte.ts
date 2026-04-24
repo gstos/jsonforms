@@ -1,19 +1,48 @@
 import {
+  type Categorization,
   type CoreActions,
   type Dispatch,
   type JsonFormsState,
-  type Layout,
-  type Scopable,
-  type UISchemaElement,
   type JsonSchema,
+  type LabelElement,
+  type Layout,
+  type OwnPropsOfMasterListItem,
+  type Scopable,
+  type StatePropsOfJsonFormsRenderer,
+  type UISchemaElement,
   createId,
+  defaultMapStateToEnumCellProps,
   isControl,
+  mapDispatchToArrayControlProps,
   mapDispatchToControlProps,
+  mapDispatchToMultiEnumProps,
+  mapStateToAllOfProps,
+  mapStateToAnyOfProps,
+  mapStateToArrayControlProps,
+  mapStateToArrayLayoutProps,
+  mapStateToCellProps,
   mapStateToControlProps,
+  mapStateToControlWithDetailProps,
+  mapStateToDispatchCellProps,
+  mapStateToEnumControlProps,
+  mapStateToJsonFormsRendererProps,
+  mapStateToLabelProps,
+  mapStateToLayoutProps,
+  mapStateToMasterListItemProps,
+  mapStateToMultiEnumControlProps,
+  mapStateToOneOfEnumCellProps,
+  mapStateToOneOfEnumControlProps,
+  mapStateToOneOfProps,
   removeId,
 } from '@jsonforms/core';
 import { requireJsonFormsContext } from './context.svelte';
-import type { ControlProps, Required } from './types';
+import type {
+  ControlProps,
+  LayoutProps,
+  MasterListItemProps,
+  RendererProps,
+  Required,
+} from './types';
 
 /**
  * Generic composition primitive. Subscribes to the jsonforms context and
@@ -60,21 +89,12 @@ export function useControl<
     ...props,
     ...stateMap({ jsonforms }, props),
     id,
-  }) as unknown as Required<P & R> & { id?: string };
+  }) as unknown as Required<P & R>;
 
-  // Expose derived via a getter so cross-module consumers preserve reactivity.
-  // Using getter-based object instead of Proxy to ensure reliable reactivity
-  // when accessed from a .svelte component's template, since Svelte's reactivity
-  // tracks property reads through the getter on each access.
-  const control = {
-    get id() { return derived.id; },
-  } as unknown as Required<P & R>;
-
-  // Build a proper getter-proxy that forwards all property accesses to `derived`.
-  // This is needed because `derived` is the live reactive object — each property
-  // access goes through the getter, re-reading the $derived value and registering
-  // the dependency in whatever reactive context the caller is in.
-  const controlProxy = new Proxy(control as object, {
+  // Expose derived via a Proxy so cross-module consumers preserve reactivity.
+  // Each property access goes through the `get` trap, which re-reads `derived`
+  // (a $derived), registering the dependency in the caller's reactive context.
+  const control = new Proxy({} as object, {
     get(_target, key) {
       return (derived as Record<string | symbol, unknown>)[key as string];
     },
@@ -108,7 +128,7 @@ export function useControl<
   const dispatchMethods = dispatchMap?.(dispatch);
 
   return {
-    control: controlProxy,
+    control,
     ...(dispatchMethods as D),
   };
 }
@@ -120,15 +140,6 @@ export function useControl<
 export const getJsonFormsControl = (props: ControlProps) => {
   return useControl(props, mapStateToControlProps, mapDispatchToControlProps);
 };
-
-import {
-  mapStateToAllOfProps,
-  mapStateToAnyOfProps,
-  mapStateToControlWithDetailProps,
-  mapStateToEnumControlProps,
-  mapStateToOneOfEnumControlProps,
-  mapStateToOneOfProps,
-} from '@jsonforms/core';
 
 /** Bindings for controls exposing a `detail` (e.g. array/object renderers). */
 export const getJsonFormsControlWithDetail = (props: ControlProps) =>
@@ -154,13 +165,6 @@ export const getJsonFormsAnyOfControl = (props: ControlProps) =>
 export const getJsonFormsOneOfControl = (props: ControlProps) =>
   useControl(props, mapStateToOneOfProps, mapDispatchToControlProps);
 
-import {
-  mapDispatchToArrayControlProps,
-  mapDispatchToMultiEnumProps,
-  mapStateToArrayControlProps,
-  mapStateToMultiEnumControlProps,
-} from '@jsonforms/core';
-
 /**
  * Explicit return type to avoid TS2732 caused by AJV's ErrorObject type.
  * Mirrors the Vue binding's `UseJsonFormsArrayControlReturnType` workaround.
@@ -185,23 +189,6 @@ export const getJsonFormsMultiEnumControl = (props: ControlProps) =>
     mapStateToMultiEnumControlProps,
     mapDispatchToMultiEnumProps
   );
-
-import {
-  type Categorization,
-  type LabelElement,
-  type OwnPropsOfMasterListItem,
-  type StatePropsOfJsonFormsRenderer,
-  defaultMapStateToEnumCellProps,
-  mapStateToArrayLayoutProps,
-  mapStateToCellProps,
-  mapStateToDispatchCellProps,
-  mapStateToJsonFormsRendererProps,
-  mapStateToLabelProps,
-  mapStateToLayoutProps,
-  mapStateToMasterListItemProps,
-  mapStateToOneOfEnumCellProps,
-} from '@jsonforms/core';
-import type { LayoutProps, MasterListItemProps, RendererProps } from './types';
 
 /** Bindings for layout elements (VerticalLayout, HorizontalLayout, Group, etc.). */
 export const getJsonFormsLayout = (props: LayoutProps) => {
