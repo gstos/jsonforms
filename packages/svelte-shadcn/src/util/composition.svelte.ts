@@ -1,5 +1,4 @@
 import {
-  computeLabel,
   findUISchema,
   isDescriptionHidden,
   type ControlElement,
@@ -44,13 +43,13 @@ export function useShadcnControl(opts: UseShadcnControlOptions) {
     id: control.id,
     description: control.description,
     errors: control.errors,
-    label: computeLabel(
-      control.label,
-      control.required,
-      !!appliedOptions.hideRequiredAsterisk
-    ),
+    // Pass the raw label; ControlWrapper renders the required asterisk
+    // as a styled, aria-hidden span rather than a plain '*' suffix.
+    label: control.label,
     visible: control.visible,
-    required: control.required,
+    // `required` here means "show the required asterisk". Suppress when
+    // hideRequiredAsterisk is set via config or uischema.options.
+    required: control.required && !appliedOptions.hideRequiredAsterisk,
     descriptionHidden: isDescriptionHidden(
       control.visible,
       control.description,
