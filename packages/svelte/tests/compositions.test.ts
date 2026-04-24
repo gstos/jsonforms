@@ -101,3 +101,37 @@ describe('array and multi-enum control compositions', () => {
     expect(typeof getJsonFormsMultiEnumControl).toBe('function');
   });
 });
+
+import {
+  getJsonFormsLayout,
+  getJsonFormsArrayLayout,
+  getJsonFormsLabel,
+  getJsonFormsMasterListItem,
+  getJsonFormsCell,
+  getJsonFormsEnumCell,
+  getJsonFormsOneOfEnumCell,
+  getJsonFormsDispatchCell,
+  getJsonFormsRenderer,
+  getJsonFormsCategorization,
+} from '../src/compositions.svelte';
+
+describe('layout / label / item / cell / renderer / categorization compositions', () => {
+  const exportedFns = {
+    getJsonFormsLayout,
+    getJsonFormsArrayLayout,
+    getJsonFormsLabel,
+    getJsonFormsMasterListItem,
+    getJsonFormsCell,
+    getJsonFormsEnumCell,
+    getJsonFormsOneOfEnumCell,
+    getJsonFormsDispatchCell,
+    getJsonFormsRenderer,
+    getJsonFormsCategorization,
+  };
+
+  for (const [name, fn] of Object.entries(exportedFns)) {
+    it(`${name} is a function`, () => {
+      expect(typeof fn).toBe('function');
+    });
+  }
+});

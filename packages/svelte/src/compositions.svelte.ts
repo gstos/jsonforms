@@ -3,6 +3,7 @@ import {
   type CoreActions,
   type Dispatch,
   type JsonFormsState,
+  type Layout,
   type Scopable,
   type UISchemaElement,
   type JsonSchema,
@@ -186,3 +187,132 @@ export const getJsonFormsMultiEnumControl = (props: ControlProps) =>
     mapStateToMultiEnumControlProps,
     mapDispatchToMultiEnumProps
   );
+
+import {
+  type Categorization,
+  type LabelElement,
+  type OwnPropsOfMasterListItem,
+  type StatePropsOfJsonFormsRenderer,
+  defaultMapStateToEnumCellProps,
+  mapStateToArrayLayoutProps,
+  mapStateToCellProps,
+  mapStateToDispatchCellProps,
+  mapStateToJsonFormsRendererProps,
+  mapStateToLabelProps,
+  mapStateToLayoutProps,
+  mapStateToMasterListItemProps,
+  mapStateToOneOfEnumCellProps,
+} from '@jsonforms/core';
+import type { LayoutProps, MasterListItemProps, RendererProps } from './types';
+
+/** Bindings for layout elements (VerticalLayout, HorizontalLayout, Group, etc.). */
+export const getJsonFormsLayout = (props: LayoutProps) => {
+  const { control, ...other } = useControl(props, mapStateToLayoutProps);
+  return { layout: control, ...other };
+};
+
+/** Bindings for array elements that render as a layout (not a control). */
+export const getJsonFormsArrayLayout = (props: ControlProps) => {
+  const { control, ...other } = useControl(props, mapStateToArrayLayoutProps);
+  return { layout: control, ...other };
+};
+
+/** Bindings for Label elements. */
+export const getJsonFormsLabel = (props: RendererProps<LabelElement>) => {
+  const { control, ...other } = useControl(props, mapStateToLabelProps);
+  return { label: control, ...other };
+};
+
+/** Bindings for master-list items in a master-detail array control. */
+export const getJsonFormsMasterListItem = (props: MasterListItemProps) => {
+  const { control, ...other } = useControl<
+    Omit<OwnPropsOfMasterListItem, 'handleSelect' | 'removeItem'>,
+    unknown,
+    OwnPropsOfMasterListItem
+  >(props as unknown as OwnPropsOfMasterListItem, mapStateToMasterListItemProps);
+  return { item: control, ...other };
+};
+
+/** Bindings for cells (minimal inputs without error validation). */
+export const getJsonFormsCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsEnumCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    defaultMapStateToEnumCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsOneOfEnumCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToOneOfEnumCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+export const getJsonFormsDispatchCell = (props: ControlProps) => {
+  const { control, ...other } = useControl(
+    props,
+    mapStateToDispatchCellProps,
+    mapDispatchToControlProps
+  );
+  return { cell: control, ...other };
+};
+
+/**
+ * Specialized bindings used by DispatchRenderer / DispatchCell to pick the
+ * best-matching renderer from the registry. Returns `{ renderer, rootSchema }`
+ * where both are reactive.
+ */
+export const getJsonFormsRenderer = (props: RendererProps) => {
+  const { jsonforms } = requireJsonFormsContext();
+
+  const raw = $derived(
+    mapStateToJsonFormsRendererProps({ jsonforms }, props) as Required<StatePropsOfJsonFormsRenderer>
+  );
+  const rootSchema = $derived(raw.rootSchema);
+  const renderer = $derived.by(() => {
+    const { rootSchema: _root, ...rest } = raw;
+    return rest;
+  });
+
+  return {
+    get renderer() {
+      return renderer;
+    },
+    get rootSchema() {
+      return rootSchema;
+    },
+  };
+};
+
+/**
+ * Bindings for Categorization elements. Returns the usual `layout` plus a
+ * `categories` array where each entry is a sub-layout binding for one category.
+ */
+export const getJsonFormsCategorization = (props: LayoutProps) => {
+  const { layout, ...other } = getJsonFormsLayout(props);
+
+  const categories = (layout.uischema as Categorization).elements.map(
+    (category) => {
+      const categoryProps: LayoutProps = {
+        ...props,
+        uischema: category as Layout,
+      };
+      return getJsonFormsLayout(categoryProps).layout;
+    }
+  );
+
+  return { layout, categories, ...other };
+};
