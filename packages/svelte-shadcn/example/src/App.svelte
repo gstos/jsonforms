@@ -5,11 +5,18 @@
   import type { ErrorObject } from 'ajv';
 
   const examples = getExamples();
-  const example = examples[0];
 
-  let data = $state<unknown>(example.data);
-  let i18n = $state(example.i18n);
+  let currentExampleName = $state(examples[0].name);
+  const example = $derived(examples.find((e) => e.name === currentExampleName) ?? examples[0]);
+
+  let data = $state<unknown>(examples[0].data);
+  let i18n = $state(examples[0].i18n);
   let additionalErrors = $state<ErrorObject[]>([]);
+
+  $effect(() => {
+    data = example.data;
+    i18n = example.i18n;
+  });
 
   function handleChange(e: { data: unknown; errors: unknown[] }) {
     data = e.data;
@@ -24,7 +31,18 @@
 
   <main class="grid gap-6 md:grid-cols-[20rem_minmax(0,1fr)]">
     <aside class="space-y-4">
-      <p class="text-sm text-muted-foreground">Example: <strong>{example.label}</strong></p>
+      <div class="space-y-2">
+        <label for="example-select" class="block text-sm font-medium">Example</label>
+        <select
+          id="example-select"
+          class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          bind:value={currentExampleName}
+        >
+          {#each examples as ex (ex.name)}
+            <option value={ex.name}>{ex.label}</option>
+          {/each}
+        </select>
+      </div>
     </aside>
 
     <section class="min-w-0">
