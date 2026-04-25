@@ -43,6 +43,21 @@
           {/each}
         </select>
       </div>
+
+      <details class="rounded-md border border-border bg-card">
+        <summary class="cursor-pointer px-3 py-2 text-sm font-medium">data</summary>
+        <pre class="max-h-64 overflow-auto bg-muted p-3 text-xs">{JSON.stringify(data, null, 2)}</pre>
+      </details>
+
+      <details class="rounded-md border border-border bg-card">
+        <summary class="cursor-pointer px-3 py-2 text-sm font-medium">schema</summary>
+        <pre class="max-h-64 overflow-auto bg-muted p-3 text-xs">{JSON.stringify(example.schema, null, 2)}</pre>
+      </details>
+
+      <details class="rounded-md border border-border bg-card">
+        <summary class="cursor-pointer px-3 py-2 text-sm font-medium">uischema</summary>
+        <pre class="max-h-64 overflow-auto bg-muted p-3 text-xs">{JSON.stringify(example.uischema, null, 2)}</pre>
+      </details>
     </aside>
 
     <section class="min-w-0">
