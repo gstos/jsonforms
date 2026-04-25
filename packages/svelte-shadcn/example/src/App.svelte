@@ -3,6 +3,7 @@
   import { shadcnRenderers, shadcnCells } from '@jsonforms/svelte-shadcn';
   import { getExamples } from '@jsonforms/examples';
   import type { ErrorObject } from 'ajv';
+  import get from 'lodash/get';
 
   const examples = getExamples();
 
@@ -20,6 +21,22 @@
 
   function handleChange(e: { data: unknown; errors: unknown[] }) {
     data = e.data;
+  }
+
+  function onTranslationChange(e: Event) {
+    const target = e.target as HTMLTextAreaElement;
+    try {
+      const input = JSON.parse(target.value);
+      i18n = {
+        ...i18n,
+        translate: (key: string, defaultMessage: string | undefined) => {
+          const translated = get(input, key) as string | undefined;
+          return translated ?? defaultMessage;
+        },
+      };
+    } catch {
+      console.log('invalid translation input');
+    }
   }
 </script>
 
@@ -58,6 +75,16 @@
         <summary class="cursor-pointer px-3 py-2 text-sm font-medium">uischema</summary>
         <pre class="max-h-64 overflow-auto bg-muted p-3 text-xs">{JSON.stringify(example.uischema, null, 2)}</pre>
       </details>
+
+      <div class="space-y-2">
+        <label for="i18n-input" class="block text-sm font-medium">i18n translator</label>
+        <textarea
+          id="i18n-input"
+          class="w-full min-h-32 rounded-md border border-input bg-background px-3 py-2 font-mono text-xs"
+          placeholder={'{ "key": "translation" }'}
+          onchange={onTranslationChange}
+        ></textarea>
+      </div>
     </aside>
 
     <section class="min-w-0">
