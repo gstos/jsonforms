@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { JsonForms } from '@jsonforms/svelte';
   import { shadcnRenderers, shadcnCells } from '@jsonforms/svelte-shadcn';
   import { getExamples } from '@jsonforms/examples';
@@ -17,6 +18,20 @@
   $effect(() => {
     data = example.data;
     i18n = example.i18n;
+  });
+
+  onMount(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash && examples.some((e) => e.name === hash)) {
+      currentExampleName = hash;
+    }
+  });
+
+  $effect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    url.hash = currentExampleName;
+    window.history.replaceState({}, '', url);
   });
 
   function handleChange(e: { data: unknown; errors: unknown[] }) {
