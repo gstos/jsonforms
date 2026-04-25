@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@jsonforms/core": "workspace:*",
+    "@jsonforms/examples": "workspace:*",
     "@jsonforms/svelte": "workspace:*",
     "@jsonforms/svelte-shadcn": "workspace:*",
     "bits-ui": "^1.3.0",
