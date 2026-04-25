@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@jsonforms/core": "workspace:*",
+    "@jsonforms/examples": "workspace:*",
     "@jsonforms/svelte": "workspace:*",
     "@jsonforms/svelte-shadcn": "workspace:*",
     "bits-ui": "^1.3.0",
+    "lodash": "^4.18.1",
     "svelte": "^5.16.0"
   },
   "devDependencies": {
