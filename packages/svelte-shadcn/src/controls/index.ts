@@ -7,6 +7,7 @@ import { oneOfEnumControlRendererEntry } from './OneOfEnumControlRenderer';
 import { multiStringControlRendererEntry } from './MultiStringControlRenderer';
 import { dateControlRendererEntry } from './DateControlRenderer';
 import { dateTimeControlRendererEntry } from './DateTimeControlRenderer';
+import { timeControlRendererEntry } from './TimeControlRenderer';
 import { sliderControlRendererEntry } from './SliderControlRenderer';
 
 export const controlRenderers = [
@@ -19,5 +20,6 @@ export const controlRenderers = [
   multiStringControlRendererEntry,
   dateControlRendererEntry,
   dateTimeControlRendererEntry,
+  timeControlRendererEntry,
   sliderControlRendererEntry,
 ];
