@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { JsonForms } from '@jsonforms/svelte';
 import { categorizationStepperRendererEntry } from '../../src/layouts/CategorizationStepperRenderer';
+import { categorizationRendererEntry } from '../../src/layouts/CategorizationRenderer';
 import { stringControlRendererEntry } from '../../src/controls/StringControlRenderer';
 
 const schema = {
@@ -60,5 +61,38 @@ describe('CategorizationStepperRenderer', () => {
   it('does not render nav buttons without showNavButtons', () => {
     const { queryByText } = mount(stepperUischema());
     expect(queryByText('Next')).toBeNull();
+  });
+});
+
+describe('CategorizationStepperRenderer tester precedence', () => {
+  // Register BOTH categorization renderers so JsonForms picks by rank.
+  const bothRenderers = [
+    categorizationRendererEntry,
+    categorizationStepperRendererEntry,
+    stringControlRendererEntry,
+  ];
+  // Stepper hook: the numbered step badge span. Tabs hook: bits-ui tablist role.
+  const stepBadge = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll('span.rounded-full')).find(
+      (el) => el.textContent?.trim() === '1'
+    );
+
+  it('picks the stepper (rank 3) over tabs (rank 2) when variant is stepper', () => {
+    const { container, getByText } = mount(stepperUischema(), {
+      renderers: bothRenderers,
+    });
+    expect(getByText('StepA')).toBeTruthy();
+    expect(stepBadge(container)).toBeTruthy();
+    expect(container.querySelector('[role="tablist"]')).toBeNull();
+  });
+
+  it('falls back to the tabs renderer when variant is not stepper', () => {
+    const { options: _drop, ...noVariantUischema } = stepperUischema();
+    const { container, getByText } = mount(noVariantUischema, {
+      renderers: bothRenderers,
+    });
+    expect(getByText('StepA')).toBeTruthy();
+    expect(container.querySelector('[role="tablist"]')).toBeTruthy();
+    expect(stepBadge(container)).toBeUndefined();
   });
 });
