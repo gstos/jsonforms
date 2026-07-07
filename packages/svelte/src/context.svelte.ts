@@ -29,3 +29,27 @@ export function requireJsonFormsContext(): JsonFormsContext {
   }
   return ctx;
 }
+
+export function getJsonForms(): JsonFormsSubStates;
+export function getJsonForms(optional: true): JsonFormsSubStates | undefined;
+export function getJsonForms(optional?: true) {
+  const jsonforms = getJsonFormsContext()?.jsonforms;
+  if (!jsonforms && !optional) {
+    throw new Error(
+      "'jsonforms' context couldn't be injected. Are you within JSON Forms?"
+    );
+  }
+  return jsonforms;
+}
+
+export function getDispatch(): Dispatch<CoreActions>;
+export function getDispatch(optional: true): Dispatch<CoreActions> | undefined;
+export function getDispatch(optional?: true) {
+  const dispatch = getJsonFormsContext()?.dispatch;
+  if (!dispatch && !optional) {
+    throw new Error(
+      "'dispatch' context couldn't be injected. Are you within JSON Forms?"
+    );
+  }
+  return dispatch;
+}
