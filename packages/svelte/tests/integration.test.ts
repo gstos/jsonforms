@@ -45,4 +45,41 @@ describe('integration: JsonForms + custom renderer + onchange', () => {
     const last = onchange.mock.calls[onchange.mock.calls.length - 1][0];
     expect(last.data).toEqual({ name: 'Bob' });
   });
+
+  it('passes the config prop through core state to renderer testers', () => {
+    const schema = {
+      type: 'object',
+      properties: { name: { type: 'string' } },
+    };
+    const uischema = {
+      type: 'Control',
+      scope: '#/properties/name',
+    } as const;
+    let seenConfig: unknown;
+    const renderers: JsonFormsRendererRegistryEntry[] = [
+      {
+        renderer: NameInput,
+        tester: (_uischema, _schema, context) => {
+          seenConfig = context.config;
+          return 10;
+        },
+      },
+    ];
+
+    const { getByTestId } = render(JsonForms, {
+      props: {
+        data: { name: 'Alice' },
+        schema,
+        uischema,
+        renderers,
+        config: { myOption: 'from-config' },
+      },
+    });
+
+    // The custom renderer actually won dispatch (tester consulted).
+    expect((getByTestId('name') as HTMLInputElement).value).toBe('Alice');
+    // The tester saw the resolved config (config prop -> configReducer ->
+    // jsonforms.config), not the never-passed raw prop.
+    expect((seenConfig as any)?.myOption).toBe('from-config');
+  });
 });

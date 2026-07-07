@@ -12,6 +12,10 @@ export {
   setJsonFormsContext,
   getJsonFormsContext,
   requireJsonFormsContext,
+  getJsonForms,
+  getDispatch,
+  getTranslator,
+  getAjv,
   type JsonFormsContext,
 } from './context.svelte';
 

@@ -3,6 +3,7 @@ import { render } from '@testing-library/svelte';
 import {
   coreReducer,
   Actions,
+  Id,
   type JsonFormsSubStates,
 } from '@jsonforms/core';
 import ControlProbeHost from './ControlProbeHost.svelte';
@@ -56,6 +57,26 @@ describe('getJsonFormsControl', () => {
     const { handleChange } = (globalThis as any).__probe;
     handleChange('name', 'Bob');
     expect(jsonforms.core!.data).toEqual({ name: 'Bob' });
+  });
+
+  it('uses the Id singleton so id generation is overridable', () => {
+    const original = { createId: Id.createId, removeId: Id.removeId };
+    try {
+      Id.createId = (proposed) => `custom-${proposed}`;
+      Id.removeId = () => true;
+
+      const props = {
+        schema: jsonforms.core!.schema,
+        uischema: jsonforms.core!.uischema as any,
+        path: '',
+      };
+      render(ControlProbeHost, { props: { jsonforms, probeProps: props } });
+      const { control } = (globalThis as any).__probe;
+      expect(control.id).toBe('custom-#/properties/name');
+    } finally {
+      Id.createId = original.createId;
+      Id.removeId = original.removeId;
+    }
   });
 });
 

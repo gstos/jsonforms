@@ -10,7 +10,7 @@ import {
   type Scopable,
   type StatePropsOfJsonFormsRenderer,
   type UISchemaElement,
-  createId,
+  Id,
   defaultMapStateToEnumCellProps,
   isControl,
   mapDispatchToArrayControlProps,
@@ -33,9 +33,8 @@ import {
   mapStateToOneOfEnumCellProps,
   mapStateToOneOfEnumControlProps,
   mapStateToOneOfProps,
-  removeId,
 } from '@jsonforms/core';
-import { requireJsonFormsContext } from './context.svelte';
+import { getDispatch, getJsonForms } from './context.svelte';
 import type {
   ControlProps,
   LayoutProps,
@@ -78,7 +77,8 @@ export function useControl<
   stateMap: (state: JsonFormsState, props: P) => R,
   dispatchMap?: (dispatch: Dispatch<CoreActions>) => D
 ) {
-  const { jsonforms, dispatch } = requireJsonFormsContext();
+  const jsonforms = getJsonForms();
+  const dispatch = getDispatch();
 
   let id = $state<string | undefined>(undefined);
 
@@ -115,11 +115,11 @@ export function useControl<
     // Track schema so effect re-runs when it changes.
     void props.schema;
     if (u && isControl(u as UISchemaElement) && (u as Scopable).scope) {
-      id = createId((u as Scopable).scope!);
+      id = Id.createId((u as Scopable).scope!);
     }
     return () => {
       if (id) {
-        removeId(id);
+        Id.removeId(id);
         id = undefined;
       }
     };
@@ -260,7 +260,7 @@ export const getJsonFormsDispatchCell = (props: ControlProps) => {
  * where both are reactive.
  */
 export const getJsonFormsRenderer = (props: RendererProps) => {
-  const { jsonforms } = requireJsonFormsContext();
+  const jsonforms = getJsonForms();
 
   const raw = $derived(
     mapStateToJsonFormsRendererProps({ jsonforms }, props) as Required<StatePropsOfJsonFormsRenderer>
