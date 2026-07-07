@@ -70,7 +70,7 @@ Adjust the `@source` path to wherever `@jsonforms/svelte-shadcn` resolves on you
   {uischema}
   {data}
   renderers={shadcnRenderers}
-  on:change={(e) => (data = e.detail.data)}
+  onchange={(event) => (data = event.data)}
 />
 ```
 
