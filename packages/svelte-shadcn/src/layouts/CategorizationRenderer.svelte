@@ -7,26 +7,43 @@
 
   let props: LayoutProps = $props();
   const { layout, categories } = getJsonFormsCategorization(props);
-  let active = $state('0');
+
+  // Preserve the ORIGINAL index when filtering so tab identity is stable
+  // even as earlier categories toggle visibility (upstream fix semantics).
+  const visibleCategories = $derived(
+    categories
+      .map((category, originalIndex) => ({ category, originalIndex }))
+      .filter((entry) => entry.category.visible)
+  );
+
+  let active = $state('');
+  $effect(() => {
+    const values = visibleCategories.map((e) => String(e.originalIndex));
+    if (!values.includes(active)) {
+      active = values[0] ?? '';
+    }
+  });
 </script>
 
 {#if layout.visible}
   <Tabs value={active} onValueChange={(v) => { active = v; }}>
     <TabsList>
-      {#each categories as cat, i}
-        <TabsTrigger value={String(i)}>{(cat.uischema as any).label}</TabsTrigger>
+      {#each visibleCategories as { category, originalIndex } (originalIndex)}
+        <TabsTrigger value={String(originalIndex)} disabled={!category.enabled}>
+          {(category.uischema as any).label}
+        </TabsTrigger>
       {/each}
     </TabsList>
-    {#each categories as cat, i}
-      <TabsContent value={String(i)}>
-        {#each (cat.uischema as any).elements as el}
+    {#each visibleCategories as { category, originalIndex } (originalIndex)}
+      <TabsContent value={String(originalIndex)}>
+        {#each (category.uischema as any).elements as el}
           <DispatchRenderer
-            schema={cat.schema}
+            schema={category.schema}
             uischema={el}
-            path={cat.path}
-            enabled={cat.enabled}
-            renderers={cat.renderers}
-            cells={cat.cells}
+            path={category.path}
+            enabled={category.enabled}
+            renderers={category.renderers}
+            cells={category.cells}
           />
         {/each}
       </TabsContent>
