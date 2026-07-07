@@ -62,6 +62,35 @@ describe('CategorizationStepperRenderer', () => {
     const { queryByText } = mount(stepperUischema());
     expect(queryByText('Next')).toBeNull();
   });
+
+  it('renders the mapped/translated label, not the raw uischema.label', () => {
+    const i18nUischema = {
+      type: 'Categorization',
+      elements: [
+        {
+          type: 'Category',
+          label: 'StepA',
+          i18n: 'stepLabelKey',
+          elements: [{ type: 'Control', scope: '#/properties/a' }],
+        },
+        {
+          type: 'Category',
+          label: 'StepB',
+          elements: [{ type: 'Control', scope: '#/properties/b' }],
+        },
+      ],
+      options: { variant: 'stepper' },
+    };
+    const { getByText, queryByText } = mount(i18nUischema, {
+      i18n: {
+        translate: (key: string, defaultMessage?: string) =>
+          key === 'stepLabelKey.label' ? 'Translated StepA' : defaultMessage,
+      },
+    });
+
+    expect(getByText('Translated StepA')).toBeTruthy();
+    expect(queryByText('StepA')).toBeNull();
+  });
 });
 
 describe('CategorizationStepperRenderer tester precedence', () => {

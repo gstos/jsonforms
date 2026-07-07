@@ -41,7 +41,7 @@
             class="mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full border text-xs"
             >{i + 1}</span
           >
-          {(entry.category.uischema as any).label}
+          {entry.category.label}
         </Button>
         {#if i !== visibleCategories.length - 1}
           <Separator class="flex-1" />

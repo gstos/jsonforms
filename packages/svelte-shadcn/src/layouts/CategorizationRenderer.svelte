@@ -30,7 +30,7 @@
     <TabsList>
       {#each visibleCategories as { category, originalIndex } (originalIndex)}
         <TabsTrigger value={String(originalIndex)} disabled={!category.enabled}>
-          {(category.uischema as any).label}
+          {category.label}
         </TabsTrigger>
       {/each}
     </TabsList>
