@@ -4,6 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  base: './',
   plugins: [svelte(), tailwindcss()],
   resolve: {
     // Point at the workspace source so `pnpm dev` works without first running

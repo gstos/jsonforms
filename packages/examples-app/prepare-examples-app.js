@@ -16,6 +16,7 @@ const examples = {
   'angular-material': join(packagesDir, 'angular-material', 'example', 'dist'),
   'vue-vanilla': join(packagesDir, 'vue-vanilla', 'example', 'dist'),
   'vue-vuetify': join(packagesDir, 'vue-vuetify', 'example', 'dist'),
+  'svelte-shadcn': join(packagesDir, 'svelte-shadcn', 'example', 'dist'),
 };
 
 // Clean and recreate dist dir

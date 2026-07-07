@@ -47,6 +47,7 @@
     "test:watch": "vitest",
     "dev": "cd example && vite",
     "example:build": "cd example && vite build",
+    "build:examples-app": "cd example && vite build",
     "test-cov": "vitest run --coverage"
   },
   "dependencies": {
