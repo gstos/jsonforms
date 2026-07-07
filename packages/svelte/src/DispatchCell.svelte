@@ -13,7 +13,7 @@
   const determined = $derived.by<Component>(() => {
     const testerContext = {
       rootSchema: cell.rootSchema,
-      config: props.config,
+      config: cell.config,
     };
     const best = maxBy(cell.cells, (c) =>
       c.tester(cell.uischema, cell.schema, testerContext)

@@ -14,7 +14,7 @@
   const determined = $derived.by<Component>(() => {
     const testerContext = {
       rootSchema: bindings.rootSchema,
-      config: props.config,
+      config: bindings.renderer.config,
     };
     const best = maxBy(bindings.renderer.renderers, (r) =>
       r.tester(bindings.renderer.uischema, bindings.renderer.schema, testerContext)

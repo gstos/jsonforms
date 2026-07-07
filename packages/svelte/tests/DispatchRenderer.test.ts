@@ -4,7 +4,10 @@ import type { JsonFormsSubStates } from '@jsonforms/core';
 import DispatchRendererHost from './DispatchRendererHost.svelte';
 import Hello from './fixtures/Hello.svelte';
 
-function makeState(renderers: any[]): JsonFormsSubStates {
+function makeState(
+  renderers: any[],
+  config: unknown = {}
+): JsonFormsSubStates {
   return {
     core: {
       data: {},
@@ -12,7 +15,7 @@ function makeState(renderers: any[]): JsonFormsSubStates {
       uischema: { type: 'VerticalLayout', elements: [] },
       errors: [],
     },
-    config: {},
+    config,
     renderers,
     cells: [],
     uischemas: [],
@@ -53,6 +56,33 @@ describe('DispatchRenderer', () => {
       },
     });
     expect(getByText('No applicable renderer found.')).toBeTruthy();
+  });
+
+  it('passes the resolved (core state) config to testers, not the raw prop', () => {
+    let seenConfig: unknown;
+    const renderers = [
+      {
+        renderer: Hello,
+        tester: (_uischema: any, _schema: any, context: any) => {
+          seenConfig = context.config;
+          return 1;
+        },
+      },
+    ];
+    const jsonforms = makeState(renderers, { myOption: 'from-config' });
+    render(DispatchRendererHost, {
+      props: {
+        jsonforms,
+        rendererProps: {
+          schema: jsonforms.core!.schema,
+          uischema: jsonforms.core!.uischema,
+          path: 'p',
+          // Intentionally does NOT pass `config` as a prop — JsonForms never
+          // does either. Testers must see the resolved state config instead.
+        },
+      },
+    });
+    expect((seenConfig as any)?.myOption).toBe('from-config');
   });
 
   it('falls back to UnknownRenderer when registry is empty', () => {
