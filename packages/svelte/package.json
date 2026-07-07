@@ -1,6 +1,6 @@
 {
   "name": "@jsonforms/svelte",
-  "version": "3.8.0-alpha.0",
+  "version": "3.8.0",
   "description": "Svelte 5 module of JSON Forms",
   "repository": {
     "type": "git",
@@ -83,7 +83,7 @@
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
-    "@jsonforms/core": "3.8.0-alpha.0",
+    "@jsonforms/core": "3.8.0",
     "svelte": "^5.0.0"
   }
 }

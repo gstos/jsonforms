@@ -1,6 +1,6 @@
 {
   "name": "@jsonforms/vue",
-  "version": "3.8.0-alpha.0",
+  "version": "3.8.0",
   "description": "Vue 3 module of JSON Forms",
   "repository": {
     "type": "git",
@@ -57,7 +57,7 @@
     "@jsonforms/core": "workspace:*",
     "@rollup/plugin-alias": "^3.1.8",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.8",
+    "@types/node": "^24.12.2",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "@vue/cli-plugin-babel": "~5.0.8",
@@ -86,11 +86,11 @@
     "ts-jest": "^29.4.5",
     "tslib": "^2.5.0",
     "typedoc": "~0.25.3",
-    "typescript": "~5.5.0",
+    "typescript": "~5.8.3",
     "vue": "^3.5.17"
   },
   "peerDependencies": {
-    "@jsonforms/core": "3.8.0-alpha.0",
+    "@jsonforms/core": "3.8.0",
     "vue": "^3.5.0"
   }
 }
