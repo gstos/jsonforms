@@ -71,6 +71,8 @@ jobs:
           cd ../vue && pnpm pkg set peerDependencies.@jsonforms/core="${{ github.event.inputs.next_version }}"
           cd ../vue-vanilla && pnpm pkg set peerDependencies.@jsonforms/core="${{ github.event.inputs.next_version }}" && pnpm pkg set peerDependencies.@jsonforms/vue="${{ github.event.inputs.next_version }}"
           cd ../vue-vuetify && pnpm pkg set peerDependencies.@jsonforms/core="${{ github.event.inputs.next_version }}" && pnpm pkg set peerDependencies.@jsonforms/vue="${{ github.event.inputs.next_version }}"
+          cd ../svelte && pnpm pkg set peerDependencies.@jsonforms/core="${{ github.event.inputs.next_version }}"
+          cd ../svelte-shadcn && pnpm pkg set peerDependencies.@jsonforms/core="${{ github.event.inputs.next_version }}" && pnpm pkg set peerDependencies.@jsonforms/svelte="${{ github.event.inputs.next_version }}"
 
       - name: 'Tag and Commit'
         run: |

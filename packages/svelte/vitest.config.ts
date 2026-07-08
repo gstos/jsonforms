@@ -8,6 +8,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['lcov', 'text-summary'],
+      include: ['src/**'],
+    },
   },
   resolve: {
     // vitest requires the browser condition for @testing-library/svelte

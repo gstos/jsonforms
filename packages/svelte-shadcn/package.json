@@ -46,7 +46,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "cd example && vite",
-    "example:build": "cd example && vite build"
+    "example:build": "cd example && vite build",
+    "build:examples-app": "cd example && vite build",
+    "test-cov": "vitest run --coverage"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -63,6 +65,7 @@
     "@types/node": "^22.13.8",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
+    "@vitest/coverage-v8": "^2.1.9",
     "bits-ui": "^1.3.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^8.7.0",
