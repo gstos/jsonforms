@@ -6,8 +6,10 @@ This is `gstos/jsonforms` — a fork of [`eclipsesource/jsonforms`](https://gith
 
 | Subsystem | Status | Location |
 |---|---|---|
-| `@jsonforms/svelte` — Svelte 5 framework binding | ✅ Merged (PR #1) | `packages/svelte/` |
-| `@jsonforms/svelte-shadcn` — shadcn-svelte renderer set | ✅ Merged (PR #3) | `packages/svelte-shadcn/` |
+| `@jsonforms/svelte` — Svelte 5 framework binding | ✅ Merged (PR #1), parity with vue 3.8.0 (PR #12) | `packages/svelte/` |
+| `@jsonforms/svelte-shadcn` — shadcn-svelte renderer set | ✅ Merged (PR #3), parity (PR #13), example in examples-app (PR #14) | `packages/svelte-shadcn/` |
+
+The **fork-upstream-alignment plan** (`docs/superpowers/plans/2026-07-07-fork-upstream-alignment.md`) is fully complete (2026-07): upstream v3.8.0 merged, both svelte packages versioned/pinned at 3.8.0, coverage + publish workflow + examples-app wiring done, MIT headers added. All feature branches merged and deleted — everything is on `master`.
 
 The Svelte binding was ported 1:1 from `@jsonforms/vue`. If in doubt about binding behavior, consult `packages/vue/src/` — the Svelte counterpart mirrors it.
 
@@ -21,7 +23,8 @@ Read the spec before touching Svelte code; read the plan before writing new code
 ## How we work in this repo
 
 - **Worktrees:** create one per feature branch under `.worktrees/<branch-name>` (gitignored). Use `git worktree add .worktrees/<name> -b feature/<name>`. Install deps via `pnpm --dir /abs/path/to/worktree install`.
-- **Node:** project `engines` wants `^22`; `v25.x` works but prints an engine warning — ignore it.
+- **Node:** project `engines` wants `^24` (bumped by the upstream 3.8.0 merge); newer versions work but print an engine warning — ignore it.
+- **TZ gotcha:** `material-renderers/test/datejs.test.ts` fails 2 tests on UTC-negative machines (this one is UTC-3). Pre-existing upstream issue; passes with `TZ=UTC`. Not a regression — don't chase it during full-repo test runs.
 - **pnpm PATH gotcha:** `pnpm` comes from corepack shims and is **not** in the default shell `PATH` subagents inherit. Prepend this to every Bash call that needs `pnpm`:
   ```bash
   export PATH="/home/gustavo/.local/share/fnm/node-versions/v22.22.2/installation/lib/node_modules/corepack/shims:$PATH"
@@ -42,6 +45,7 @@ Applies when editing `packages/svelte/` or planning `packages/svelte-shadcn/`:
 8. **Ports of Vue `use*` composables** use the `get*` prefix (e.g. `useJsonFormsControl` → `getJsonFormsControl`) to follow Svelte naming conventions.
 9. **Testing:** Vitest + `@testing-library/svelte` + jsdom. Tests live in `tests/` as `.test.ts` + test-fixture `.svelte` components. Vite plugin needs `{ hot: false }` and `resolve.conditions: ['browser']` in `vitest.config.ts`.
 10. **`@sveltejs/vite-plugin-svelte` pinned at `^4`**, not `^5` — Vite 5.4 compat constraint in this monorepo.
+11. **License headers:** every `.ts`/`.svelte` file under the svelte packages' `src/`, `tests/`, and `example/src/` carries the repo-standard MIT header (verbatim from `packages/core/src/index.ts`; HTML-comment form in `.svelte` files). Add it to new files.
 
 ## General project information
 
